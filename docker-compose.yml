@@ -2,19 +2,7 @@ version: '3'
 
 services:
 
-  # rabbitmq:
-  #   build: 
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5672:5672" # Порт для AMQP протокола
-  #     - "15672:15672" # Порт для веб-интерфейса управления
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: guest
-  #     RABBITMQ_DEFAULT_PASS: guest
-  #   volumes:
-  #     - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-
+ 
   fastapi:
       build: 
         context: .
@@ -28,3 +16,16 @@ services:
       dockerfile: telegram_bot.Dockerfile
     ports:
       - "8080:8080" # Порт для взаимодействия с телеграм-ботом
+    
+ # rabbitmq:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5672:5672" # Порт для AMQP протокола
+  #     - "15672:15672" # Порт для веб-интерфейса управления
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: guest
+  #     RABBITMQ_DEFAULT_PASS: guest
+  #   volumes:
+  #     - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
