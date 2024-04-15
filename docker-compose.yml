@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  rabbitmq:
+    build: .
+    ports:
+      - "5672:5672" # Порт для AMQP протокола
+      - "15672:15672" # Порт для веб-интерфейса управления
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf

@@ -3,7 +3,6 @@
 # python telegram_bot.py
 # ====================================================================================
 
-
 import telebot
 import requests
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
@@ -16,13 +15,8 @@ API_URL = "http://127.0.0.1:8000/messages/"
 
 bot = telebot.TeleBot(TOKEN)
 
-
-
-
-# Настройка логирования
 # Настройка логирования
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s ')
-
 
 # ====================================================================================
 
