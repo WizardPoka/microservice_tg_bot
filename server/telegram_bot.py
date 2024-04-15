@@ -3,6 +3,7 @@
 # python telegram_bot.py
 # ====================================================================================
 
+
 import telebot
 import requests
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
@@ -11,7 +12,10 @@ from config import TOKEN
 import logging
 # ====================================================================================
 
-API_URL = "http://127.0.0.1:8000/messages/"
+# API_URL = "http://127.0.0.1:8000/messages/"
+API_URL = "http://fastapi:8000/messages/"
+# response = requests.get(API_URL)
+
 
 bot = telebot.TeleBot(TOKEN)
 
