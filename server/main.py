@@ -1,7 +1,14 @@
+# ====================================================================================
+# Запуск FastApi
+# uvicorn main:app --reload
+# ====================================================================================
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI()
+
+# ====================================================================================
 
 class Message(BaseModel):
     message: str
@@ -16,3 +23,5 @@ async def receive_message(message: Message):
 @app.get("/messages/")
 async def get_messages():
     return messages
+
+# ====================================================================================
