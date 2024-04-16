@@ -1,22 +1,19 @@
 # ====================================================================================
-# Запуск бота 
+# Запуск бота локально: 
 # python telegram_bot.py
 # ====================================================================================
 
-
 import telebot
 import requests
+import logging
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from config import TOKEN
 
-import logging
 # ====================================================================================
-# API_URL = "http://microservice_tg_bot-fastapi:8000/messages/"
-# API_URL = "http://localhost:8000/messages/"
 
+# API_URL = "http://localhost:8000/messages/"
 # API_URL = "http://127.0.0.1:8000/messages/"
 API_URL = "http://fastapi:8000/messages/"
-# response = requests.get(API_URL)
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -26,6 +23,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s ')
 
 # ====================================================================================
 
+# Выполнение запроса POST для отправки даннных на FastApi, а также обработчик событий
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     try:
@@ -50,6 +48,7 @@ def handle_message(message):
 
 # ====================================================================================
 
+# Кнопка "Получить список"
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -59,6 +58,7 @@ def handle_start(message):
 
 # ====================================================================================
 
+# Выполнение запроса GET для получения данных с FastApi
 @bot.message_handler(func=lambda message: message.text == '/get_messages')
 def get_messages(message):
     try:
