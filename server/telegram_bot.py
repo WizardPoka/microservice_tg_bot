@@ -3,18 +3,23 @@
 # python telegram_bot.py
 # ====================================================================================
 
+import asyncio
 import telebot
 import requests
 import logging
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from config import TOKEN
+from redis_manager import RedisManager
 
 # ====================================================================================
 
+# URL FastAPI
 # API_URL = "http://localhost:8000/messages/"
 # API_URL = "http://127.0.0.1:8000/messages/"
 API_URL = "http://fastapi:8000/messages/"
 
+# Создаем экземпляр RedisManager
+redis_manager = RedisManager()
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -23,7 +28,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s ')
 
 # ====================================================================================
 
-# Выполнение запроса POST для отправки даннных на FastApi, а также обработчик событий
+# Обрабатываем все остальные сообщения от пользователя
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     try:
@@ -48,36 +53,46 @@ def handle_message(message):
 
 # ====================================================================================
 
-# Кнопка "Получить список"
+# Выполняем подключение к Redis при запуске бота
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     button = KeyboardButton("Получить список")
     keyboard.add(button)
-    bot.send_message(message.chat.id, "Нажмите на кнопку, чтобы получить список сообщений из FastAPI", reply_markup=keyboard)
+    bot.send_message(message.chat.id, "Нажмите на кнопку, чтобы получить список сообщений из Redis", reply_markup=keyboard)
 
 # ====================================================================================
 
-# Выполнение запроса GET для получения данных с FastApi
+# Создаем глобальный цикл событий
+global_loop = asyncio.get_event_loop()
+
+# Обрабатываем команду /get_messages для получения сообщений из Redis
 @bot.message_handler(func=lambda message: message.text == '/get_messages')
 def get_messages(message):
     try:
-        response = requests.get(API_URL)
-        if response.status_code == 200:
-            messages = response.json()
-            if messages:
-                bot.send_message(message.chat.id, "Сообщения из FastAPI:\n" + "\n".join(messages))
-            else:
-                bot.send_message(message.chat.id, "Нет сообщений из FastAPI")
+        # Вызываем метод get_messages синхронно, используя глобальный цикл событий
+        messages = global_loop.run_until_complete(redis_manager.get_messages())
+        
+        if messages:
+            bot.send_message(message.chat.id, "Сообщения из Redis:\n" + "\n".join(messages))
         else:
-            bot.send_message(message.chat.id, "Не удалось получить сообщения из FastAPI")
+            bot.send_message(message.chat.id, "Нет сообщений в Redis")
     except Exception as e:
-        logging.exception("An error occurred while getting messages: %s", str(e))
-        bot.send_message(message.chat.id, "Произошла ошибка при получении сообщений из FastAPI")
+        logging.exception("An error occurred while getting messages from Redis: %s", str(e))
+        bot.send_message(message.chat.id, "Произошла ошибка при получении сообщений из Redis")
 
 # ====================================================================================
 
 if __name__ == "__main__":
+    # Подключаемся к Redis при запуске бота
+    try:
+        import asyncio
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(redis_manager.connect())
+    except Exception as e:
+        logging.exception("An error occurred while connecting to Redis: %s", str(e))
+
+    # Запускаем бот
     bot.polling()
 
 # ====================================================================================
